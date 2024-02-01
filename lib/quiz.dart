@@ -9,64 +9,100 @@ class Quiz extends StatefulWidget {
 }
 
 class _QuizState extends State<Quiz> {
-  int currentQuestionIndex = 0; // Índice da pergunta atual
+  int currentQuestionIdex = 0;
+  String? selectedAnswer;
+  bool? isCorrect;
+
   final List<Map<String, dynamic>> questions = [
     {
-      'question': 'Primeira Pergunta',
-      'answers': ['Resposta 1', 'Resposta 2', 'Resposta 3', 'Resposta 4'],
+    'question':  'Quantos estômagos tem os golfinhos?',
+      'answers': ['1', '2', '3', '4'],
+      'correctAnswer': '2',
     },
-    //adicionar mais perguntas aqui
+    {
+    'question':  'Qual é o maior oceano, em quilômetros quadrados (km²), da superfície terrestre?',
+      'answers': [
+        'Oceano Índico',
+         'Oceano Pacífico',
+          'Oceano atlântico',
+           'Oceano Glacial Ártico'
+        ],
+      'correctAnswer': 'Oceano Pacífico',
+    },
   ];
+
   void nextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
-      setState( () {
-        currentQuestionIndex++;
+    if(currentQuestionIdex < questions.length - 1){
+      setState(() {
+        currentQuestionIdex++;
       });
-    } else {
-      //fim do quiz, fazer algo aqui
     }
   }
-  void handleAnswer() {
-    Future.delayed(Duration(seconds: 3), () {
-      nextQuestion();
+
+  void handleAnswer(String answer) {
+    setState(() {
+      selectedAnswer = answer;
+      isCorrect = answer == questions[currentQuestionIdex]['correctAnswer'];
+    });
+
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        selectedAnswer = null;
+        isCorrect = null;
+        if(currentQuestionIdex < questions.length - 1) {
+          currentQuestionIdex++;
+        }
+      });
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    var currentQuestion = questions [currentQuestionIndex];
-    return Scaffold( 
-      appBar: AppBar(
-        backgroundColor: Colors.deepPurple[50],
-        title: Text('Quiz marítimo', 
-        style: GoogleFonts.roboto(fontWeight: FontWeight.bold))),
-    body: Column(
-      children: [ 
-        Container( 
-          padding: const EdgeInsets.all(18),
-          color: Colors.deepPurple[50],
-          width: double.infinity,
-          height: 400,
-          child: Center(
-            child: Text(currentQuestion['question'],
-            style: GoogleFonts.roboto(fontWeight: FontWeight.bold, fontSize: 18), ),
-          ),
-        ),
-          Wrap(
-            children: currentQuestion['answers']
-            .map<Widget>((resposta) => meuBtn (resposta, handleAnswer))
-            .toList(),
-          ),
-        ],
+    var currentQuestion = questions[currentQuestionIdex];
+    return Scaffold(
+      appBar: AppBar(title: Text('Quiz marítimo!', style: GoogleFonts.roboto(fontWeight: FontWeight.bold))
       ),
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            color: Colors.deepPurple[50],
+            width: double.infinity,
+            height: 400,
+            child: Center(
+              child: Text(currentQuestion['question'],
+               style: GoogleFonts.roboto(fontWeight: FontWeight.bold, fontSize: 18),     
+              ),
+            ),
+          ),
+          Wrap(
+            children: currentQuestion['answers'].map<Widget>((resposta){
+              bool isSelected = selectedAnswer == resposta;
+              Color? buttonColor;
+              if(isSelected){
+                buttonColor = isCorrect! ? Colors.green : Colors.red;
+                isCorrect!? print('acertou') : print("erro");
+              }
+
+              return meuBtn(resposta, () => handleAnswer(resposta), buttonColor);
+            })
+            .toList(),
+          )
+        ],
+        ),
     );
   }
 }
 
-Widget meuBtn(String resposta) => Container( 
+Widget meuBtn(String resposta, VoidCallback onPressed, Color? color) =>
+ Container(
   margin: const EdgeInsets.all(16),
   width: 160,
-  child: ElevatedButton( 
-    onPressed: () {},
+  child: ElevatedButton(
+    onPressed: onPressed,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: color,
+    ),
     child: Text(resposta),
   ),
 );

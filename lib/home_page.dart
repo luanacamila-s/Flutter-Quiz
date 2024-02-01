@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SuperQuiz', style: GoogleFonts.nunitoSans(fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text('Quizzup', style: GoogleFonts.nunitoSans(fontSize: 18, fontWeight: FontWeight.bold)),
         centerTitle: false,
         actions: const [
           Icon(Icons.search)
